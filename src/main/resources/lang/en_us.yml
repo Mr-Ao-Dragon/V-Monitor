@@ -1,0 +1,24 @@
+# English Language File for V-Monitor
+
+# Player join/leave/switch messages
+join: "<green>{player}</green> joined the server."
+leave: "<red>{player}</red> left the server."
+switch: "<yellow>{player}</yellow> switched from <blue>{from}</blue> to <aqua>{to}</aqua>."
+first-join: "<bold><gold>{player}</gold></bold> joined the server for the first time! Welcome!"
+
+# Command messages
+server-not-exists: "Server <red>{server}</red> does not exist."
+no-permission: "<red>You do not have permission to use this command.</red>"
+reload-success: "<green>Configuration reloaded successfully.</green>"
+
+# Help command messages
+help:
+  - "<gold><bold>V-Monitor Help:</bold></gold>"
+  - "<aqua>/vm list [server]</aqua> <white>-</white> <green>View online players list (specify server optional).</green>"
+  - "<aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>"
+
+# Online list format messages
+list-total-format: "<gold><bold>Online List</bold></gold> - <yellow>Total players online: <blue>{count}</blue></yellow>"
+list-server-format: "<gold><bold>Online List</bold></gold> - <yellow>Server <aqua>{server}</aqua> has <blue>{count}</blue> players online</yellow>"
+list-server-players-format: "<aqua>{server_display}</aqua>: <green>{players}</green>"
+list-no-players: "<aqua>{server_display}</aqua>: <dark_aqua>No players</dark_aqua>"

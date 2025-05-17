@@ -1,0 +1,24 @@
+# 简体中文语言文件 for V-Monitor
+
+# 玩家加入/离开/切换服务器消息
+join: "<green>{player}</green>加入了服务器。"
+leave: "<red>{player}</red>离开了服务器。"
+switch: "<yellow>{player}</yellow>从 <blue>{from}</blue> 切换到了 <aqua>{to}</aqua>。"
+first-join: "<bold><gold>{player}</gold></bold>首次加入服务器！欢迎！"
+
+# 命令消息
+server-not-exists: "服务器 <red>{server}</red> 不存在。"
+no-permission: "<red>您没有权限使用此命令。</red>"
+reload-success: "<green>配置重载成功。</green>"
+
+# Help 命令消息
+help:
+  - "<gold><bold>V-Monitor 帮助:</bold></gold>"
+  - "<aqua>/vm list [服务器]</aqua> <white>-</white> <green>查看在线玩家列表 (可指定服务器)。</green>"
+  - "<aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>"
+
+# 在线列表格式消息
+list-total-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>当前服务器共计有 <blue>{count}</blue> 人在线</yellow>"
+list-server-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>服务器 <aqua>{server}</aqua> 共计有 <blue>{count}</blue> 人在线</yellow>"
+list-server-players-format: "<aqua>{server_display}</aqua>：<green>{players}</green>"
+list-no-players: "<aqua>{server_display}</aqua>: <dark_aqua>暂无玩家</dark_aqua>"
