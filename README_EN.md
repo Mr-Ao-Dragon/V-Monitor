@@ -1,5 +1,5 @@
 - [中文版](./README.md)
-- [繁體中文版](./README_zh_tw.md)
+- [繁體中文版](./README_TW.md)
 
 # V-Monitor - Player Activity and Server Status Monitoring Velocity Plugin
 
