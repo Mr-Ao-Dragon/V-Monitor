@@ -5,20 +5,55 @@ join: "<green>{player}</green> joined the server."
 leave: "<red>{player}</red> left the server."
 switch: "<yellow>{player}</yellow> switched from <blue>{from}</blue> to <aqua>{to}</aqua>."
 first-join: "<bold><gold>{player}</gold></bold> joined the server for the first time! Welcome!"
+unknown-server: "Unknown server"
 
-# Command messages
+# Generic messages
 server-not-exists: "Server <red>{server}</red> does not exist."
 no-permission: "<red>You do not have permission to use this command.</red>"
 reload-success: "<green>Configuration reloaded successfully.</green>"
+unknown-info: "<gray>N/A</gray>"
 
 # Help command messages
-help:
-  - "<gold><bold>V-Monitor Help:</bold></gold>"
-  - "<aqua>/vm list [server]</aqua> <white>-</white> <green>View online players list (specify server optional).</green>"
-  - "<aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>"
+help-format: |
+  <gold><bold>V-Monitor Help:</bold></gold>
+  <aqua>/vm list [server]</aqua> <white>-</white> <green>View online players list (specify server optional).</green>
+  <aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>
+  <aqua>/vm info [server]</aqua> <white>-</white> <green>Query proxy or specified server info.</green>
 
 # Online list format messages
-list-total-format: "<gold><bold>Online List</bold></gold> - <yellow>Total players online: <blue>{count}</blue></yellow>"
-list-server-format: "<gold><bold>Online List</bold></gold> - <yellow>Server <aqua>{server}</aqua> has <blue>{count}</blue> players online</yellow>"
-list-server-players-format: "<aqua>{server_display}</aqua>: <green>{players}</green>"
-list-no-players: "<aqua>{server_display}</aqua>: <dark_aqua>No players</dark_aqua>"
+list-total-format: "<gold><bold>Online List</bold></gold> - <yellow>Total players online: <blue>{total_player}</blue></yellow>"
+list-server-format: "<gold><bold>Online List</bold></gold> - <yellow>Server <aqua>{server}</aqua> has <blue>{server_player}</blue> players online</yellow>"
+list-server-name: "<aqua>{server_display}</aqua>"
+list-server-player: "<green>{players}</green>"
+list-no-players: "<dark_aqua>No players</dark_aqua>"
+
+# Info command messages
+info-proxy-format: |
+  <gold><bold>Current Velocity Proxy Info</bold></gold>
+  <yellow>Core Version:</yellow> <green>{proxy_version}</green>
+  <yellow>Total Online Players:</yellow> <blue>{total_player}</blue>
+  <yellow>Registered Servers:</yellow> <green>{server_count}</green>
+
+  <gold><bold>Server Status Summary</bold></gold>
+  <yellow>- Running:</yellow> <green>{running_servers}</green>
+  <yellow>- Offline:</yellow> <red>{offline_servers}</red>
+
+  <gold><bold>Individual Server Status</bold></gold>
+  {server_status_list}
+
+info-server-detail-format: |
+  <gold><bold>Server {server_name} Info</bold></gold>
+  <yellow>Server Core:</yellow> {core_name}
+  <yellow>Game Version:</yellow> {server_version}
+  <yellow>Forge/NeoForge Support:</yellow> {mod_support_status}
+  <yellow>Online Players:</yellow> {online_players}
+  <yellow>Server MOTD:</yellow>
+  <reset>{motd}</reset>
+
+info-server-status-running-short: "<green>Running</green>"
+info-server-status-offline-short: "<red>Offline</red>"
+info-server-unreachable: "<red>Server {server} is unreachable or ping failed.</red>"
+info-server-status-offline: "<red>Offline</red>"
+
+info-pinging: "<yellow>Getting server info, please wait...</yellow>"
+info-individual-server-format: "- <white>{server}</white> [{display_name}]: <yellow>Status:</yellow> {status} <yellow>Online:</yellow> <blue>{online_players}</blue>"

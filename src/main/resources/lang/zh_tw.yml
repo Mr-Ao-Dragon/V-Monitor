@@ -5,20 +5,55 @@ join: "<green>{player}</green>加入了伺服器。"
 leave: "<red>{player}</red>離開了伺服器。"
 switch: "<yellow>{player}</yellow>從 <blue>{from}</blue> 切換到了 <aqua>{to}</aqua>。"
 first-join: "<bold><gold>{player}</gold></bold>首次加入伺服器！歡迎！"
+unknown-server: "未知伺服器"
 
-# 命令訊息
+# 通用訊息
 server-not-exists: "伺服器 <red>{server}</red> 不存在。"
 no-permission: "<red>您沒有權限使用此命令。</red>"
 reload-success: "<green>配置重載成功。</green>"
+unknown-info: "<gray>未知</gray>"
 
 # Help 命令訊息
-help:
-  - "<gold><bold>V-Monitor 說明:</bold></gold>"
-  - "<aqua>/vm list [伺服器]</aqua> <white>-</white> <green>查看在線玩家列表 (可指定伺服器)。</green>"
-  - "<aqua>/vm reload</aqua> <white>-</white> <green>重載插件配置。</green>"
+help-format: |
+  <gold><bold>V-Monitor 說明:</bold></gold>
+  <aqua>/vm list [伺服器]</aqua> <white>-</white> <green>查看在線玩家列表 (可指定伺服器)。</green>
+  <aqua>/vm reload</aqua> <white>-</white> <green>重載插件配置。</green>
+  <aqua>/vm info [伺服器]</aqua> <white>-</white> <green>查詢代理或指定伺服器資訊。</green>
 
 # 在線列表格式訊息
-list-total-format: "<gold><bold>伺服器在線列表</bold></gold> - <yellow>目前伺服器共計有 <blue>{count}</blue> 人在線</yellow>"
-list-server-format: "<gold><bold>伺服器在線列表</bold></gold> - <yellow>伺服器 <aqua>{server}</aqua> 共計有 <blue>{count}</blue> 人在線</yellow>"
-list-server-players-format: "<aqua>{server_display}</aqua>：<green>{players}</green>"
-list-no-players: "<aqua>{server_display}</aqua>: <dark_aqua>暫無玩家</dark_aqua>"
+list-total-format: "<gold><bold>伺服器在線列表</bold></gold> - <yellow>目前伺服器共計有 <blue>{total_player}</blue> 人在線</yellow>"
+list-server-format: "<gold><bold>伺服器在線列表</bold></gold> - <yellow>伺服器 <aqua>{server}</aqua> 共計有 <blue>{server_player}</blue> 人在線</yellow>"
+list-server-name: "<aqua>{server_display}</aqua>"
+list-server-player: "<green>{players}</green>"
+list-no-players: "<dark_aqua>暫無玩家</dark_aqua>"
+
+# Info 命令訊息
+info-proxy-format: |
+  <gold><bold>目前 Velocity 代理資訊</bold></gold>
+  <yellow>核心版本:</yellow> <green>{proxy_version}</green>
+  <yellow>總計在線人數:</yellow> <blue>{total_player}</blue>人
+  <yellow>伺服器數量:</yellow> <green>{server_count}</green>台
+
+  <gold><bold>伺服器運行狀態概覽</bold></gold>
+  <yellow>- 正在運行:</yellow> <green>{running_servers}</green>台
+  <yellow>- 未運行:</yellow> <red>{offline_servers}</red>台
+
+  <gold><bold>各子伺服器運行狀態</bold></gold>
+  {server_status_list}
+
+info-server-detail-format: |
+  <gold><bold>伺服器 {server_name} 資訊</bold></gold>
+  <yellow>伺服器核心:</yellow> {core_name}
+  <yellow>遊戲版本:</yellow> {server_version}
+  <yellow>是否支援Forge/NeoForge:</yellow> {mod_support_status}
+  <yellow>目前在線人數:</yellow> {online_players}人
+  <yellow>伺服器MOTD:</yellow>
+  <reset>{motd}</reset>
+
+info-server-status-running-short: "<green>正在運行</green>"
+info-server-status-offline-short: "<red>未運行</red>"
+info-server-unreachable: "<red>伺服器 {server} 無法連接或 Ping 失敗。</red>"
+info-server-status-offline: "<red>未運行</red>"
+
+info-pinging: "<yellow>正在獲取伺服器資訊，請稍候...</yellow>"
+info-individual-server-format: "- <white>{server}</white> [{display_name}]：<yellow>狀態:</yellow> {status} <yellow>在線:</yellow> <blue>{online_players}</blue>人"
