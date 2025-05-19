@@ -15,10 +15,10 @@ unknown-info: "<gray>未知</gray>"
 
 # Help 命令消息
 help-format: |
-  <gold><bold>V-Monitor 帮助:</bold></gold>
+  <gold><bold>V-Monitor - V1.1.0 帮助:</bold></gold>
   <aqua>/vm list [服务器]</aqua> <white>-</white> <green>查看在线玩家列表 (可指定服务器)。</green>
-  <aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>
   <aqua>/vm info [服务器]</aqua> <white>-</white> <green>查询代理或指定服务器信息。</green>
+  <aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>
 
 # 在线列表格式消息
 list-total-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>当前服务器共计有 <blue>{total_player}</blue> 人在线</yellow>"

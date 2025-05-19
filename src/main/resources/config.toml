@@ -8,8 +8,8 @@ version = "1.1"
 default = "zh_cn"
 
 # Server aliases (服务器名称别名设置)
-# Format: alias = "actual_server_name"
+# Format: actual_server_name = "alias"
 # Example: 'hub' will be an alias for the server named 'lobby'
-# hub = "lobby"
-# creative = "server2"
+# lobby = "hub"
+# server2 = "creative"
 [server-aliases]

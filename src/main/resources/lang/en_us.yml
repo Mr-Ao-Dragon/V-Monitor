@@ -15,10 +15,10 @@ unknown-info: "<gray>N/A</gray>"
 
 # Help command messages
 help-format: |
-  <gold><bold>V-Monitor Help:</bold></gold>
+  <gold><bold>V-Monitor - V1.1.0 Help:</bold></gold>
   <aqua>/vm list [server]</aqua> <white>-</white> <green>View online players list (specify server optional).</green>
-  <aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>
   <aqua>/vm info [server]</aqua> <white>-</white> <green>Query proxy or specified server info.</green>
+  <aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>
 
 # Online list format messages
 list-total-format: "<gold><bold>Online List</bold></gold> - <yellow>Total players online: <blue>{total_player}</blue></yellow>"
