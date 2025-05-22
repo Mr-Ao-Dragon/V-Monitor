@@ -12,6 +12,8 @@ server-not-exists: "Server <red>{server}</red> does not exist."
 no-permission: "<red>You do not have permission to use this command.</red>"
 reload-success: "<green>Configuration reloaded successfully.</green>"
 unknown-info: "<gray>N/A</gray>"
+usage-server-list: "<gold>Usage: <white>/vm server list <all|server_name></white></gold>"
+usage-server-info: "<gold>Usage: <white>/vm server info <all|server_name></white></gold>"
 
 # Help command messages
 help-format: |

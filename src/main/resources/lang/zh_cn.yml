@@ -12,6 +12,8 @@ server-not-exists: "服务器 <red>{server}</red> 不存在。"
 no-permission: "<red>您没有权限使用此命令。</red>"
 reload-success: "<green>配置重载成功。</green>"
 unknown-info: "<gray>未知</gray>"
+usage-server-list: "<gold>请使用: <white>/vm server list <all|server_name></white></gold>"
+usage-server-info: "<gold>请使用: <white>/vm server info <all|server_name></white></gold>"
 
 # Help 命令消息
 help-format: |

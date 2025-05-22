@@ -8,7 +8,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.CompletableFuture;
 
 public class HelpCommand {
@@ -31,5 +30,13 @@ public class HelpCommand {
 
     public CompletableFuture<List<String>> suggest(CommandSource source, String[] args) {
         return CompletableFuture.completedFuture(new ArrayList<>());
+    }
+
+    public LanguageLoader getLanguageLoader() {
+        return languageLoader;
+    }
+
+    public MiniMessage getMiniMessage() {
+        return miniMessage;
     }
 }
