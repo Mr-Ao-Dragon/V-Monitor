@@ -5,20 +5,57 @@ join: "<green>{player}</green>加入了服务器。"
 leave: "<red>{player}</red>离开了服务器。"
 switch: "<yellow>{player}</yellow>从 <blue>{from}</blue> 切换到了 <aqua>{to}</aqua>。"
 first-join: "<bold><gold>{player}</gold></bold>首次加入服务器！欢迎！"
+unknown-server: "未知服务器"
 
-# 命令消息
+# 通用消息
 server-not-exists: "服务器 <red>{server}</red> 不存在。"
 no-permission: "<red>您没有权限使用此命令。</red>"
 reload-success: "<green>配置重载成功。</green>"
+unknown-info: "<gray>未知</gray>"
+usage-server-list: "<gold>请使用: <white>/vm server list <all|server_name></white></gold>"
+usage-server-info: "<gold>请使用: <white>/vm server info <all|server_name></white></gold>"
 
 # Help 命令消息
-help:
-  - "<gold><bold>V-Monitor 帮助:</bold></gold>"
-  - "<aqua>/vm list [服务器]</aqua> <white>-</white> <green>查看在线玩家列表 (可指定服务器)。</green>"
-  - "<aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>"
+help-format: |
+  <gold><bold>V-Monitor - V1.1.0 帮助:</bold></gold>
+  <aqua>/vm list [服务器]</aqua> <white>-</white> <green>查看在线玩家列表 (可指定服务器)。</green>
+  <aqua>/vm info [服务器]</aqua> <white>-</white> <green>查询代理或指定服务器信息。</green>
+  <aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>
 
 # 在线列表格式消息
-list-total-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>当前服务器共计有 <blue>{count}</blue> 人在线</yellow>"
-list-server-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>服务器 <aqua>{server}</aqua> 共计有 <blue>{count}</blue> 人在线</yellow>"
-list-server-players-format: "<aqua>{server_display}</aqua>：<green>{players}</green>"
-list-no-players: "<aqua>{server_display}</aqua>: <dark_aqua>暂无玩家</dark_aqua>"
+list-total-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>当前服务器共计有 <blue>{total_player}</blue> 人在线</yellow>"
+list-server-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>服务器 <aqua>{server}</aqua> 共计有 <blue>{server_player}</blue> 人在线</yellow>"
+list-server-name: "<aqua>{server_display}</aqua>"
+list-server-player: "<green>{players}</green>"
+list-no-players: "<dark_aqua>暂无玩家</dark_aqua>"
+
+# Info 命令消息
+info-proxy-format: |
+  <gold><bold>当前 Velocity 代理信息</bold></gold>
+  <yellow>核心版本:</yellow> <green>{proxy_version}</green>
+  <yellow>总计在线人数:</yellow> <blue>{total_player}</blue>人
+  <yellow>服务器数量:</yellow> <green>{server_count}</green>台
+
+  <gold><bold>服务器运行状态概览</bold></gold>
+  <yellow>- 正在运行:</yellow> <green>{running_servers}</green>台
+  <yellow>- 未运行:</yellow> <red>{offline_servers}</red>台
+
+  <gold><bold>各子服务器运行状态</bold></gold>
+  {server_status_list}
+
+info-server-detail-format: |
+  <gold><bold>服务器 {server_name} 信息</bold></gold>
+  <yellow>服务器核心:</yellow> {core_name}
+  <yellow>游戏版本:</yellow> {server_version}
+  <yellow>是否支持Forge/NeoForge:</yellow> {mod_support_status}
+  <yellow>当前在线人数:</yellow> {online_players}人
+  <yellow>服务器MOTD:</yellow>
+  <reset>{motd}</reset>
+
+info-server-status-running-short: "<green>正在运行</green>"
+info-server-status-offline-short: "<red>未运行</red>"
+info-server-unreachable: "<red>服务器 {server} 无法连接或 Ping 失败。</red>"
+info-server-status-offline: "<red>未运行</red>"
+
+info-pinging: "<yellow>正在获取服务器信息，请稍候...</yellow>"
+info-individual-server-format: "- <white>{server}</white> [{display_name}]：<yellow>状态:</yellow> {status} <yellow>在线:</yellow> <blue>{online_players}</blue>人"
