@@ -4,6 +4,8 @@ import cn.nirvana.vMonitor.command.CommandRegistrar;
 import cn.nirvana.vMonitor.command.HelpCommand;
 import cn.nirvana.vMonitor.command.InfoCommand;
 import cn.nirvana.vMonitor.command.ListCommand;
+import cn.nirvana.vMonitor.command.PluginListCommand; // 新增
+import cn.nirvana.vMonitor.command.PluginInfoCommand; // 新增
 import cn.nirvana.vMonitor.command.ReloadCommand;
 import cn.nirvana.vMonitor.config.ConfigFileLoader;
 import cn.nirvana.vMonitor.config.LanguageLoader;
@@ -25,10 +27,10 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "v-monitor", name = "V-Monitor", version = "1.1.0", url = "https://github.com/MC-Nirvana/V-Monitor", description = "Monitor the player's activity status", authors = {"MC-Nirvana"})
+@Plugin(id = "v-monitor", name = "V-Monitor", version = "1.1.1", url = "https://github.com/MC-Nirvana/V-Monitor", description = "Monitor the player's activity status", authors = {"MC-Nirvana"})
 public class VMonitor {
-    private final Logger logger;
     private final ProxyServer proxyServer;
+    private final Logger logger;
     private final Path dataDirectory;
     private final CommandManager commandManager;
     private final MiniMessage miniMessage;
@@ -37,27 +39,27 @@ public class VMonitor {
     private LanguageLoader languageLoader;
     private PlayerDataLoader playerDataLoader;
     private PlayerActivityListener playerActivityListener;
-    private CommandRegistrar commandRegistrar;
 
     private ListCommand listCommand;
     private HelpCommand helpCommand;
     private ReloadCommand reloadCommand;
     private InfoCommand infoCommand;
+    private PluginListCommand pluginListCommand; // 新增
+    private PluginInfoCommand pluginInfoCommand; // 新增
 
+    private CommandRegistrar commandRegistrar;
 
     @Inject
-    public VMonitor(Logger logger, @DataDirectory Path dataDirectory, ProxyServer proxyServer, CommandManager commandManager) {
-        this.logger = logger;
+    public VMonitor(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, CommandManager commandManager) {
         this.proxyServer = proxyServer;
+        this.logger = logger;
         this.dataDirectory = dataDirectory;
         this.commandManager = commandManager;
-        this.miniMessage = MiniMessage.miniMessage();
+        this.miniMessage = MiniMessage.miniMessage(); // Initialize MiniMessage
     }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        logger.info("V-Monitor is starting...");
-
         configFileLoader = new ConfigFileLoader(logger, dataDirectory);
         languageLoader = new LanguageLoader(logger, dataDirectory, configFileLoader);
         playerDataLoader = new PlayerDataLoader(logger, dataDirectory);
@@ -72,9 +74,14 @@ public class VMonitor {
         listCommand = new ListCommand(proxyServer, configFileLoader, languageLoader, miniMessage);
         helpCommand = new HelpCommand(languageLoader, miniMessage);
         reloadCommand = new ReloadCommand(configFileLoader, languageLoader, miniMessage);
-        infoCommand = new InfoCommand(proxyServer, languageLoader, miniMessage, configFileLoader); // Pass configFileLoader
+        infoCommand = new InfoCommand(proxyServer, languageLoader, miniMessage, configFileLoader);
 
-        commandRegistrar = new CommandRegistrar(commandManager, proxyServer, listCommand, helpCommand, reloadCommand, infoCommand);
+        // 初始化新的命令类
+        pluginListCommand = new PluginListCommand(proxyServer, languageLoader, miniMessage); // 新增
+        pluginInfoCommand = new PluginInfoCommand(proxyServer, languageLoader, miniMessage); // 新增
+
+        // 传递新的命令类到 CommandRegistrar (修改构造函数)
+        commandRegistrar = new CommandRegistrar(commandManager, proxyServer, listCommand, helpCommand, reloadCommand, infoCommand, pluginListCommand, pluginInfoCommand);
         commandRegistrar.registerCommands();
 
         logger.info("V-Monitor enabled!");

@@ -21,10 +21,12 @@ help-format: |
   <aqua>/vm list [服务器]</aqua> <white>-</white> <green>查看在线玩家列表 (可指定服务器)。</green>
   <aqua>/vm info [服务器]</aqua> <white>-</white> <green>查询代理或指定服务器信息。</green>
   <aqua>/vm reload</aqua> <white>-</white> <green>重载插件配置。</green>
+  <aqua>/vm plugin list</aqua> <white>-</white> <green>列出所有已加载插件。</green>
+  <aqua>/vm plugin info <all|插件ID></aqua> <white>-</white> <green>查询指定插件的详细信息。</green>
 
-# 在线列表格式消息
-list-total-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>当前服务器共计有 <blue>{total_player}</blue> 人在线</yellow>"
-list-server-format: "<gold><bold>服务器在线列表</bold></gold> - <yellow>服务器 <aqua>{server}</aqua> 共计有 <blue>{server_player}</blue> 人在线</yellow>"
+# 服务器列表命令消息
+list-header: "<gold><bold>在线服务器列表</bold></gold> - <yellow>总计服务器: <blue>{server_count}</blue>台</yellow>"
+list-server-header: "<gold><bold>服务器在线列表</bold></gold> - <yellow>服务器 <aqua>{server}</aqua> 共计有 <blue>{server_player}</blue> 人在线</yellow>"
 list-server-name: "<aqua>{server_display}</aqua>"
 list-server-player: "<green>{players}</green>"
 list-no-players: "<dark_aqua>暂无玩家</dark_aqua>"
@@ -48,14 +50,49 @@ info-server-detail-format: |
   <yellow>服务器核心:</yellow> {core_name}
   <yellow>游戏版本:</yellow> {server_version}
   <yellow>是否支持Forge/NeoForge:</yellow> {mod_support_status}
-  <yellow>当前在线人数:</yellow> {online_players}人
+  <yellow>当前在线:</yellow> {online_players}
   <yellow>服务器MOTD:</yellow>
   <reset>{motd}</reset>
 
 info-server-status-running-short: "<green>正在运行</green>"
 info-server-status-offline-short: "<red>未运行</red>"
-info-server-unreachable: "<red>服务器 {server} 无法连接或 Ping 失败。</red>"
-info-server-status-offline: "<red>未运行</red>"
+info-server-unreachable: "<red>无法连接</red>"
+info-server-mod-support-yes: "<green>是</green>"
+info-server-mod-support-no: "<red>否</red>"
+info-server-player-names: "<green>{players}</green>"
+info-server-no-players: "<gray>暂无玩家在线</gray>"
 
-info-pinging: "<yellow>正在获取服务器信息，请稍候...</yellow>"
-info-individual-server-format: "- <white>{server}</white> [{display_name}]：<yellow>状态:</yellow> {status} <yellow>在线:</yellow> <blue>{online_players}</blue>人"
+# 插件命令消息
+usage-plugin: "<yellow>请使用: <gold>/vmonitor plugin <list|info> [插件ID]</gold>"
+usage-plugin-info: "<yellow>请使用: <gold>/vmonitor plugin info <all|插件ID></gold>"
+plugin-list-empty: "<red>未找到任何插件。</red>"
+unknown-version: "未知"
+
+# 插件列表整体格式
+plugin-list-format: |
+  <gold>--- <yellow>已加载插件 ({count})</yellow> <gold>---
+  {plugin_entries}
+# 插件列表中单个条目的格式（用于循环构建）
+plugin-list-entry-line: "<gold>{plugin_name} <gray>v{plugin_version}</gray>"
+
+# 插件信息整体格式 (单个插件和'all'模式下每个插件的格式)
+plugin-info-format: |
+  <gold>--- <yellow>插件信息: {plugin_name}</yellow> <gold>---
+  <gold>ID:</gold> <gray>{id}</gray>
+  <gold>名称:</gold> <gray>{name}</gray>
+  <gold>版本:</gold> <gray>{version}</gray>
+  <gold>网站:</gold> <blue><click:open_url:{url}>{url}</click></blue>
+  <gold>描述:</gold> <gray>{description}</gray>
+  <gold>作者:</gold> <gray>{authors}</gray>
+
+# 'plugin info all' 命令的头部
+plugin-info-all-header: "<gold>--- <yellow>所有插件信息</yellow> <gold>---"
+
+# 插件列表 hover 文本格式 (合并所有信息到这个字面量块中)
+plugin-list-hover-format: |
+  <gold>ID:</gold> <gray>{id}</gray>
+  <gold>名称:</gold> <gray>{name}</gray>
+  <gold>版本:</gold> <gray>{version}</gray>
+  <gold>网站:</gold> <blue>{url}</blue>
+  <gold>描述:</gold> <gray>{description}</gray>
+  <gold>作者:</gold> <gray>{authors}</gray>

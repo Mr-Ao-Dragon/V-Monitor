@@ -64,7 +64,7 @@ public class ConfigFileLoader {
 
     public String getConfigVersion() {
         if (config == null) return "N/A";
-        return config.getString("version", "1.1");
+        return config.getString("version", "1.1.1");
     }
 
     private void loadServerAliases() {

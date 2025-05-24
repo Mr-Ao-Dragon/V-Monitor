@@ -21,10 +21,12 @@ help-format: |
   <aqua>/vm list [server]</aqua> <white>-</white> <green>View online players list (specify server optional).</green>
   <aqua>/vm info [server]</aqua> <white>-</white> <green>Query proxy or specified server info.</green>
   <aqua>/vm reload</aqua> <white>-</white> <green>Reload plugin configuration.</green>
+  <aqua>/vm plugin list</aqua> <white>-</white> <green>List all loaded plugins.</green>
+  <aqua>/vm plugin info <all|plugin_id></aqua> <white>-</white> <green>Query detailed information of a plugin.</green>
 
-# Online list format messages
-list-total-format: "<gold><bold>Online List</bold></gold> - <yellow>Total players online: <blue>{total_player}</blue></yellow>"
-list-server-format: "<gold><bold>Online List</bold></gold> - <yellow>Server <aqua>{server}</aqua> has <blue>{server_player}</blue> players online</yellow>"
+# Server list command messages
+list-header: "<gold><bold>Online Server List</bold></gold> - <yellow>Total servers: <blue>{server_count}</blue></yellow>"
+list-server-header: "<gold><bold>Server Online List</bold></gold> - <yellow>Server <aqua>{server}</aqua> has <blue>{server_player}</blue> players online</yellow>"
 list-server-name: "<aqua>{server_display}</aqua>"
 list-server-player: "<green>{players}</green>"
 list-no-players: "<dark_aqua>No players</dark_aqua>"
@@ -54,8 +56,43 @@ info-server-detail-format: |
 
 info-server-status-running-short: "<green>Running</green>"
 info-server-status-offline-short: "<red>Offline</red>"
-info-server-unreachable: "<red>Server {server} is unreachable or ping failed.</red>"
-info-server-status-offline: "<red>Offline</red>"
+info-server-unreachable: "<red>Unreachable</red>"
+info-server-mod-support-yes: "<green>Yes</green>"
+info-server-mod-support-no: "<red>No</red>"
+info-server-player-names: "<green>{players}</green>"
+info-server-no-players: "<gray>No players online</gray>"
 
-info-pinging: "<yellow>Getting server info, please wait...</yellow>"
-info-individual-server-format: "- <white>{server}</white> [{display_name}]: <yellow>Status:</yellow> {status} <yellow>Online:</yellow> <blue>{online_players}</blue>"
+# Plugin Command Messages
+usage-plugin: "<yellow>Usage: <gold>/vmonitor plugin <list|info> [plugin_id]</gold>"
+usage-plugin-info: "<yellow>Usage: <gold>/vmonitor plugin info <all|plugin_id></gold>"
+plugin-list-empty: "<red>No plugins found or loaded.</red>"
+unknown-version: "Unknown"
+
+# Overall format for the plugin list
+plugin-list-format: |
+  <gold>--- <yellow>Loaded Plugins ({count})</yellow> <gold>---
+  {plugin_entries}
+# Format for a single entry in the plugin list (used for looping)
+plugin-list-entry-line: "<gold>{plugin_name} <gray>v{plugin_version}</gray>"
+
+# Overall plugin information format (for single plugin and each plugin in 'all' mode)
+plugin-info-format: |
+  <gold>--- <yellow>Plugin Information: {plugin_name}</yellow> <gold>---
+  <gold>ID:</gold> <gray>{id}</gray>
+  <gold>Name:</gold> <gray>{name}</gray>
+  <gold>Version:</gold> <gray>{version}</gray>
+  <gold>URL:</gold> <blue><click:open_url:{url}>{url}</click></blue>
+  <gold>Description:</gold> <gray>{description}</gray>
+  <gold>Authors:</gold> <gray>{authors}</gray>
+
+# Header for the 'plugin info all' command
+plugin-info-all-header: "<gold>--- <yellow>All Plugin Information</yellow> <gold>---"
+
+# Plugin list hover text format (combines all info into this literal block)
+plugin-list-hover-format: |
+  <gold>ID:</gold> <gray>{id}</gray>
+  <gold>Name:</gold> <gray>{name}</gray>
+  <gold>Version:</gold> <gray>{version}</gray>
+  <gold>URL:</gold> <blue>{url}</blue>
+  <gold>Description:</gold> <gray>{description}</gray>
+  <gold>Authors:</gold> <gray>{authors}</gray>

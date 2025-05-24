@@ -4,7 +4,7 @@
 # V-Monitor - Player Activity and Server Status Monitoring Velocity Plugin
 
 ## I. Introduction
-V-Monitor is a lightweight Velocity proxy plugin focused on monitoring player activity such as joining, leaving, and switching servers, and providing convenient commands for players and administrators to query online player lists and detailed backend server information.
+V-Monitor is a lightweight Velocity proxy plugin (Internal development code: Arona-01) focused on monitoring player activity such as joining, leaving, and switching servers, and providing convenient commands for players and administrators to query online player lists and detailed backend server information.
 
 ## II. Key Features
 * **Player Activity Notifications:** Send customizable messages when players join, leave, or switch servers (including first join distinction).
