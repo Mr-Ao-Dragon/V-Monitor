@@ -4,8 +4,8 @@ import cn.nirvana.vMonitor.command.CommandRegistrar;
 import cn.nirvana.vMonitor.command.HelpCommand;
 import cn.nirvana.vMonitor.command.InfoCommand;
 import cn.nirvana.vMonitor.command.ListCommand;
-import cn.nirvana.vMonitor.command.PluginListCommand; // 新增
-import cn.nirvana.vMonitor.command.PluginInfoCommand; // 新增
+import cn.nirvana.vMonitor.command.PluginListCommand;
+import cn.nirvana.vMonitor.command.PluginInfoCommand;
 import cn.nirvana.vMonitor.command.ReloadCommand;
 import cn.nirvana.vMonitor.config.ConfigFileLoader;
 import cn.nirvana.vMonitor.config.LanguageLoader;
@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 
-@Plugin(id = "v-monitor", name = "V-Monitor", version = "1.1.1", url = "https://github.com/MC-Nirvana/V-Monitor", description = "Monitor the player's activity status", authors = {"MC-Nirvana"})
-public class VMonitor {
+@Plugin(id = "v-monitor", name = "V-Monitor", version = "1.1.1", url = "https://github.com/Nirvana99/V-Monitor")
+public final class VMonitor {
     private final ProxyServer proxyServer;
     private final Logger logger;
     private final Path dataDirectory;
@@ -38,16 +38,7 @@ public class VMonitor {
     private ConfigFileLoader configFileLoader;
     private LanguageLoader languageLoader;
     private PlayerDataLoader playerDataLoader;
-    private PlayerActivityListener playerActivityListener;
-
-    private ListCommand listCommand;
-    private HelpCommand helpCommand;
-    private ReloadCommand reloadCommand;
-    private InfoCommand infoCommand;
-    private PluginListCommand pluginListCommand; // 新增
-    private PluginInfoCommand pluginInfoCommand; // 新增
-
-    private CommandRegistrar commandRegistrar;
+    private CommandRegistrar commandRegistrar; // Keep a reference to CommandRegistrar
 
     @Inject
     public VMonitor(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, CommandManager commandManager) {
@@ -59,30 +50,45 @@ public class VMonitor {
     }
 
     @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
-        configFileLoader = new ConfigFileLoader(logger, dataDirectory);
-        languageLoader = new LanguageLoader(logger, dataDirectory, configFileLoader);
-        playerDataLoader = new PlayerDataLoader(logger, dataDirectory);
+    public void onProxyInitialize(ProxyInitializeEvent event) {
+        logger.info("Initializing V-Monitor...");
 
+        // Load configurations
+        configFileLoader = new ConfigFileLoader(logger, dataDirectory);
         configFileLoader.loadConfig();
+
+        languageLoader = new LanguageLoader(logger, dataDirectory, configFileLoader);
         languageLoader.loadLanguage();
+
+        playerDataLoader = new PlayerDataLoader(logger, dataDirectory);
         playerDataLoader.loadPlayerData();
 
-        playerActivityListener = new PlayerActivityListener(proxyServer, configFileLoader, languageLoader, playerDataLoader, miniMessage);
-        proxyServer.getEventManager().register(this, playerActivityListener);
+        // Register event listeners
+        proxyServer.getEventManager().register(this, new PlayerActivityListener(proxyServer, configFileLoader, languageLoader, playerDataLoader, miniMessage));
 
-        listCommand = new ListCommand(proxyServer, configFileLoader, languageLoader, miniMessage);
-        helpCommand = new HelpCommand(languageLoader, miniMessage);
-        reloadCommand = new ReloadCommand(configFileLoader, languageLoader, miniMessage);
-        infoCommand = new InfoCommand(proxyServer, languageLoader, miniMessage, configFileLoader);
+        // 1. Initialize CommandRegistrar
+        commandRegistrar = new CommandRegistrar(commandManager, proxyServer, languageLoader, miniMessage, logger);
 
-        // 初始化新的命令类
-        pluginListCommand = new PluginListCommand(proxyServer, languageLoader, miniMessage); // 新增
-        pluginInfoCommand = new PluginInfoCommand(proxyServer, languageLoader, miniMessage); // 新增
+        // 2. Instantiate HelpCommand and ReloadCommand.
+        //    These are just plain classes encapsulating logic, not registering commands themselves.
+        HelpCommand helpCommandInstance = new HelpCommand(languageLoader, miniMessage);
+        ReloadCommand reloadCommandInstance = new ReloadCommand(configFileLoader, languageLoader, miniMessage);
 
-        // 传递新的命令类到 CommandRegistrar (修改构造函数)
-        commandRegistrar = new CommandRegistrar(commandManager, proxyServer, listCommand, helpCommand, reloadCommand, infoCommand, pluginListCommand, pluginInfoCommand);
-        commandRegistrar.registerCommands();
+        // 3. Pass HelpCommand and ReloadCommand instances to CommandRegistrar.
+        //    CommandRegistrar will use these instances for the executes() logic of /vmonitor help and /vmonitor reload.
+        commandRegistrar.setHelpCommand(helpCommandInstance);
+        commandRegistrar.setReloadCommand(reloadCommandInstance);
+
+        // 4. IMPORTANT: Register the main command structure in CommandRegistrar FIRST.
+        //    This initializes the root nodes for "vmonitor", "server", and "plugin".
+        commandRegistrar.registerCommands(); // <-- This call MUST happen BEFORE instantiating classes that register sub-commands.
+
+        // 5. Instantiate other command classes. Their constructors will now correctly
+        //    call register...SubCommand() because the required LiteralCommandNodes in CommandRegistrar are initialized.
+        new ListCommand(proxyServer, configFileLoader, languageLoader, miniMessage, commandRegistrar);
+        new InfoCommand(proxyServer, languageLoader, miniMessage, configFileLoader, commandRegistrar);
+        new PluginListCommand(proxyServer, languageLoader, miniMessage, commandRegistrar);
+        new PluginInfoCommand(proxyServer, languageLoader, miniMessage, commandRegistrar);
 
         logger.info("V-Monitor enabled!");
     }

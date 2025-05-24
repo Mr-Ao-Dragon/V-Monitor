@@ -1,138 +1,150 @@
 package cn.nirvana.vMonitor.command;
 
 import cn.nirvana.vMonitor.config.LanguageLoader;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.CommandMeta; // Make sure this is imported
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
-
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.slf4j.Logger;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.List;
+import java.util.function.Consumer;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class CommandRegistrar {
     private final CommandManager commandManager;
     private final ProxyServer proxyServer;
-    private final ListCommand listCommand;
-    private final HelpCommand helpCommand;
-    private final ReloadCommand reloadCommand;
-    private final InfoCommand infoCommand;
-    private final PluginListCommand pluginListCommand; // 新增
-    private final PluginInfoCommand pluginInfoCommand; // 新增
+    private final LanguageLoader languageLoader;
+    private final MiniMessage miniMessage;
+    private final Logger logger;
 
-    public CommandRegistrar(CommandManager commandManager, ProxyServer proxyServer, ListCommand listCommand, HelpCommand helpCommand, ReloadCommand reloadCommand, InfoCommand infoCommand, PluginListCommand pluginListCommand, PluginInfoCommand pluginInfoCommand) { // 修改构造函数
+    private LiteralCommandNode<CommandSource> vmonitorRootNode;
+    private LiteralCommandNode<CommandSource> serverSubCommandNode;
+    private LiteralCommandNode<CommandSource> pluginSubCommandNode;
+
+    // References to command classes for execution (HelpCommand, ReloadCommand)
+    private HelpCommand helpCommand;
+    private ReloadCommand reloadCommand;
+
+    public CommandRegistrar(CommandManager commandManager, ProxyServer proxyServer,
+                            LanguageLoader languageLoader, MiniMessage miniMessage, Logger logger) {
         this.commandManager = commandManager;
         this.proxyServer = proxyServer;
-        this.listCommand = listCommand;
+        this.languageLoader = languageLoader;
+        this.miniMessage = miniMessage;
+        this.logger = logger;
+    }
+
+    // Setters for command instances - VMonitor will call these
+    public void setHelpCommand(HelpCommand helpCommand) {
         this.helpCommand = helpCommand;
+    }
+
+    public void setReloadCommand(ReloadCommand reloadCommand) {
         this.reloadCommand = reloadCommand;
-        this.infoCommand = infoCommand;
-        this.pluginListCommand = pluginListCommand; // 初始化
-        this.pluginInfoCommand = pluginInfoCommand; // 初始化
     }
 
     public void registerCommands() {
-        LanguageLoader lang = helpCommand.getLanguageLoader(); // Assuming helpCommand provides LanguageLoader
-        MiniMessage mm = helpCommand.getMiniMessage(); // Assuming helpCommand provides MiniMessage
-
-        // help command
-        LiteralArgumentBuilder<CommandSource> helpNode = BrigadierCommand.literalArgumentBuilder("help")
+        // Build the primary command node for "/vmonitor".
+        vmonitorRootNode = LiteralArgumentBuilder.<CommandSource>literal("vmonitor")
                 .executes(context -> {
-                    helpCommand.execute(context.getSource(), new String[0]);
+                    // Default command execution for /vmonitor: show plugin version or help
+                    String version = "1.1.1"; // Placeholder, ideally get this from VMonitor main class
+                    Component message = miniMessage.deserialize(languageLoader.getMessage("plugin-version-info")
+                            .replace("{version}", version));
+                    context.getSource().sendMessage(message);
                     return SINGLE_SUCCESS;
-                });
+                }).build();
 
-        // reload command
-        LiteralArgumentBuilder<CommandSource> reloadNode = BrigadierCommand.literalArgumentBuilder("reload")
+        // 1. /vmonitor help (vm help) - Re-add this logic directly in CommandRegistrar
+        vmonitorRootNode.addChild(LiteralArgumentBuilder.<CommandSource>literal("help")
+                .executes(context -> {
+                    if (helpCommand != null) {
+                        helpCommand.execute(context.getSource());
+                    } else {
+                        // This error should ideally not happen with proper initialization
+                        context.getSource().sendMessage(miniMessage.deserialize("<red>Help command not initialized. Internal error.</red>"));
+                        logger.error("HelpCommand instance is null when trying to execute /vmonitor help.");
+                    }
+                    return SINGLE_SUCCESS;
+                }).build()
+        );
+
+        // 2. /vmonitor reload (vm reload) - Re-add this logic directly in CommandRegistrar
+        vmonitorRootNode.addChild(LiteralArgumentBuilder.<CommandSource>literal("reload")
                 .requires(source -> source.hasPermission("vmonitor.reload"))
                 .executes(context -> {
-                    reloadCommand.execute(context.getSource(), new String[0]);
+                    if (reloadCommand != null) {
+                        reloadCommand.execute(context.getSource());
+                    } else {
+                        // This error should ideally not happen with proper initialization
+                        context.getSource().sendMessage(miniMessage.deserialize("<red>Reload command not initialized. Internal error.</red>"));
+                        logger.error("ReloadCommand instance is null when trying to execute /vmonitor reload.");
+                    }
                     return SINGLE_SUCCESS;
-                });
+                }).build()
+        );
 
-        // server list command
-        LiteralArgumentBuilder<CommandSource> serverListSubCommand = BrigadierCommand.literalArgumentBuilder("list")
-                .requires(source -> source.hasPermission("vmonitor.list"))
+        // 3. /vmonitor server (vm server) - Root for server related commands
+        this.serverSubCommandNode = LiteralArgumentBuilder.<CommandSource>literal("server")
                 .executes(context -> {
-                    listCommand.execute(context.getSource(), new String[0]);
+                    context.getSource().sendMessage(miniMessage.deserialize(languageLoader.getMessage("server-command-help")));
                     return SINGLE_SUCCESS;
-                })
-                .then(BrigadierCommand.requiredArgumentBuilder("server_name", StringArgumentType.word())
-                        .suggests((context, builder) -> {
-                            CompletableFuture<List<String>> handlerSuggestions = listCommand.suggest(context.getSource(), new String[]{builder.getRemaining()});
-                            return handlerSuggestions.thenApply(suggestionsList -> {
-                                suggestionsList.forEach(builder::suggest);
-                                return builder.build();
-                            });
-                        })
-                        .executes(context -> {
-                            String serverNameArg = context.getArgument("server_name", String.class);
-                            listCommand.execute(context.getSource(), new String[]{serverNameArg});
-                            return SINGLE_SUCCESS;
-                        })
-                );
+                }).build();
+        vmonitorRootNode.addChild(serverSubCommandNode);
 
-        // server info command
-        LiteralArgumentBuilder<CommandSource> serverInfoSubCommand = BrigadierCommand.literalArgumentBuilder("info")
-                .requires(source -> source.hasPermission("vmonitor.info"))
-                .then(BrigadierCommand.requiredArgumentBuilder("server_name", StringArgumentType.word())
-                        .suggests((context, builder) -> {
-                            CompletableFuture<List<String>> handlerSuggestions = infoCommand.suggest(context.getSource(), new String[]{builder.getRemaining()});
-                            return handlerSuggestions.thenApply(suggestionsList -> {
-                                suggestionsList.forEach(builder::suggest);
-                                return builder.build();
-                            });
-                        })
-                        .executes(context -> {
-                            String serverNameArg = context.getArgument("server_name", String.class);
-                            infoCommand.execute(context.getSource(), serverNameArg);
-                            return SINGLE_SUCCESS;
-                        })
-                )
+        // 4. /vmonitor plugin (vm plugin) - Root for plugin related commands
+        this.pluginSubCommandNode = LiteralArgumentBuilder.<CommandSource>literal("plugin")
+                .requires(source -> source.hasPermission("vmonitor.plugin"))
                 .executes(context -> {
-                    context.getSource().sendMessage(mm.deserialize(lang.getMessage("usage-server-info")));
+                    context.getSource().sendMessage(miniMessage.deserialize(languageLoader.getMessage("plugin-command-help")));
                     return SINGLE_SUCCESS;
-                });
+                }).build();
+        vmonitorRootNode.addChild(pluginSubCommandNode);
 
-        LiteralArgumentBuilder<CommandSource> serverNodeBuilder = BrigadierCommand.literalArgumentBuilder("server")
-                .then(serverListSubCommand)
-                .then(serverInfoSubCommand);
-
-        // plugin command (New)
-        LiteralArgumentBuilder<CommandSource> pluginRootNode = BrigadierCommand.literalArgumentBuilder("plugin")
-                .executes(context -> {
-                    context.getSource().sendMessage(mm.deserialize(lang.getMessage("usage-plugin"))); // Default help for /vmonitor plugin
-                    return SINGLE_SUCCESS;
-                })
-                .then(PluginListCommand.build(pluginListCommand)) // Add 'list' sub-command
-                .then(PluginInfoCommand.build(pluginInfoCommand)); // Add 'info' sub-command
-
-
-        LiteralCommandNode<CommandSource> vmonitorRootNode = BrigadierCommand.literalArgumentBuilder("vmonitor")
-                .executes(context -> {
-                    helpCommand.execute(context.getSource(), new String[0]);
-                    return SINGLE_SUCCESS;
-                })
-                .then(helpNode)
-                .then(reloadNode)
-                .then(serverNodeBuilder)
-                .then(pluginRootNode) // Add plugin root command
+        // Register the primary command "vmonitor" with CommandMeta, including "vm" as an alias.
+        CommandMeta commandMeta = commandManager.metaBuilder("vmonitor")
+                .aliases("vm") // Ensure "vm" is correctly added as an alias
                 .build();
+        commandManager.register(commandMeta, new BrigadierCommand(vmonitorRootNode));
 
-        CommandMeta vmonitorMeta = commandManager.metaBuilder("vmonitor")
-                .aliases("vm")
-                .build();
-        commandManager.register(vmonitorMeta, new BrigadierCommand(vmonitorRootNode));
+        logger.info("Main V-Monitor commands and first-level sub-commands (help, reload, server, plugin) registered.");
+    }
+
+    /**
+     * Provides an interface for other classes to register sub-commands under the 'server' root.
+     * External classes will add children to the `serverSubCommandNode`.
+     *
+     * @param subCommandBuilder A consumer that accepts the LiteralCommandNode for the 'server' command.
+     */
+    public void registerServerSubCommand(Consumer<LiteralCommandNode<CommandSource>> subCommandBuilder) {
+        if (serverSubCommandNode != null) {
+            subCommandBuilder.accept(serverSubCommandNode);
+            logger.info("Registered a sub-command under /vmonitor server.");
+        } else {
+            logger.warn("Server sub-command root not initialized. Cannot register sub-command.");
+        }
+    }
+
+    /**
+     * Provides an interface for other classes to register sub-commands under the 'plugin' root.
+     * External classes will add children to the `pluginSubCommandNode`.
+     *
+     * @param subCommandBuilder A consumer that accepts the LiteralCommandNode for the 'plugin' command.
+     */
+    public void registerPluginSubCommand(Consumer<LiteralCommandNode<CommandSource>> subCommandBuilder) {
+        if (pluginSubCommandNode != null) {
+            subCommandBuilder.accept(pluginSubCommandNode);
+            logger.info("Registered a sub-command under /vmonitor plugin.");
+        } else {
+            logger.warn("Plugin sub-command root not initialized. Cannot register sub-command.");
+        }
     }
 }
