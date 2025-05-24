@@ -61,4 +61,4 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: 'plugin'
-          body: ${{  steps.gen-release-note.outputs.releaseNotes}}
+          body: ${{  steps.gen-release-note.outputs.releaseNotes  }}
